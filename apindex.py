@@ -161,7 +161,7 @@ if __name__ == "__main__":
     description = "apindex - Script that, given `tree -Js`, creates a static HTML directory listing"
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("tree",
-                        metavar="<output of `tree -Js>`",
+                        metavar="<output of `tree -Js`>",
                         type=str,
                         nargs=1,
                         help="root directory of files"
