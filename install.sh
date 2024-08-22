@@ -3,7 +3,7 @@
 echo "installing apindex"
 cd
 cd .cache
-git clone --depth=1 https://github.com/paperbenni/apindex.git
+git clone --depth=1 https://github.com/flashcarts/apindex.git
 cd apindex
 cmake . -DCMAKE_INSTALL_PREFIX=/usr
 sudo make install
