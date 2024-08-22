@@ -6,6 +6,6 @@ CMakeFiles/*
 CPackConfig.cmake
 CPackSourceConfig.cmake
 Makefile
-./apindex
+apindex
 cmake_install.cmake
 install_manifest.txt
