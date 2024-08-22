@@ -106,9 +106,10 @@ class File():
 
 
 class Directory():
-    def __init__(self, directory, baseurl, output):
+    def __init__(self, directory, baseurl, curpath, output):
         self.directory = directory
         self.baseurl = baseurl
+        self.curpath = curpath
         self.output = output
         try:
             os.mkdir(output)
@@ -126,8 +127,8 @@ class Directory():
             htmlContent = f.read()
 
         # initial setup
-        htmlContent = htmlContent.replace("#DIR", self.baseurl)
-        htmlContent = htmlContent.replace("#TITLE", self.baseurl)
+        htmlContent = htmlContent.replace("#DIR", self.curpath)
+        htmlContent = htmlContent.replace("#TITLE", self.curpath)
         htmlContentDir = ""
         htmlContentFile = ""
 
@@ -142,7 +143,7 @@ class Directory():
                 file = File(i, self.baseurl, self.output)
                 if file.isDirectory():
                     # spawn new class and write those first
-                    subdirectory = Directory(i, f"{self.baseurl}/{i['name']}", f"{self.output}/{i['name']}")
+                    subdirectory = Directory(i, f"{self.baseurl}/{i['name']}", f"{self.curpath}/{i['name']}", f"{self.output}/{i['name']}")
                     subdirectory.write()
                     htmlContentDir += file.genHTMLEntry()
                 else:
@@ -194,5 +195,5 @@ if __name__ == "__main__":
     with open(args.tree[0], 'r') as f:
         dirtree = json.load(f)
 
-    rootdir = Directory(dirtree[0], baseurl, output)
+    rootdir = Directory(dirtree[0], baseurl, ".", output)
     rootdir.write()
