@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    baseurl = ""
+    baseurl = "."
     if args.baseurl:
         baseurl = args.baseurl[0]
 
