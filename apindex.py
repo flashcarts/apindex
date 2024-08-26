@@ -45,9 +45,10 @@ class Icon:
 
 
 class File():
-    def __init__(self, file, baseurl, output):
+    def __init__(self, file, baseurl, curpath, output):
         self.file = file
         self.baseurl = baseurl
+        self.curpath = curpath.replace("./", "/")
         self.output = output
 
     icons = parseIconsDescription()
@@ -76,7 +77,7 @@ class File():
 
     def getPath(self):
         if self.isDirectory():
-            return self.getFileName()
+            return f"{self.curpath}/{self.getFileName()}"
         else:
             return f"{self.baseurl}/{self.getFileName()}"
 
@@ -133,14 +134,14 @@ class Directory():
         htmlContentFile = ""
 
         # add link to go to previous dir
-        back_directory = File({"type": "directory", "name": ".."}, self.baseurl, self.output)
+        back_directory = File({"type": "directory", "name": ".."}, self.baseurl, self.curpath, self.output)
         htmlContentDir += back_directory.genHTMLEntry()
 
         # check if directory actually has anything to add
         if "contents" in self.directory:
             # loop through files and dirs
             for i in self.directory["contents"]:
-                file = File(i, self.baseurl, self.output)
+                file = File(i, self.baseurl, self.curpath, self.output)
                 if file.isDirectory():
                     # spawn new class and write those first
                     subdirectory = Directory(i, f"{self.baseurl}/{i['name']}", f"{self.curpath}/{i['name']}", f"{self.output}/{i['name']}")
@@ -174,6 +175,12 @@ if __name__ == "__main__":
                         nargs=1,
                         help="Optional: baseurl, use if file is on another host from dir list"
                         )
+    parser.add_argument("--basepath",
+                        metavar=".",
+                        type=str,
+                        nargs=1,
+                        help="Optional: basepath, use if you intend to publish apindex-generated html files in a subdirectory"
+    )
     parser.add_argument("-o",
                         "--out",
                         metavar="site",
@@ -188,6 +195,10 @@ if __name__ == "__main__":
     if args.baseurl:
         baseurl = args.baseurl[0]
 
+    curpath = "."
+    if args.basepath:
+        curpath = f"/{args.basepath[0]}"
+
     output = "site"
     if args.out:
         output = args.out[0]
@@ -195,5 +206,5 @@ if __name__ == "__main__":
     with open(args.tree[0], 'r') as f:
         dirtree = json.load(f)
 
-    rootdir = Directory(dirtree[0], baseurl, ".", output)
+    rootdir = Directory(dirtree[0], baseurl, curpath, output)
     rootdir.write()
