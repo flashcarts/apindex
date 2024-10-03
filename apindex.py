@@ -45,10 +45,11 @@ class Icon:
 
 
 class File():
-    def __init__(self, file, baseurl, curpath, output):
+    def __init__(self, file, baseurl, curpath, ignoredextension, output):
         self.file = file
         self.baseurl = baseurl
         self.curpath = curpath.replace("./", "/")
+        self.ignoredextension = ignoredextension
         self.output = output
 
     icons = parseIconsDescription()
@@ -76,7 +77,7 @@ class File():
         return self.file["name"]
 
     def getPath(self):
-        if self.isDirectory():
+        if self.isDirectory() or [True if self.getFileName().endswith(ext) else False for ext in self.ignoredextension]:
             return f"{self.curpath}/{self.getFileName()}"
         else:
             return f"{self.baseurl}/{self.getFileName()}"
@@ -107,10 +108,11 @@ class File():
 
 
 class Directory():
-    def __init__(self, directory, baseurl, curpath, output):
+    def __init__(self, directory, baseurl, curpath, ignoredextension, output):
         self.directory = directory
         self.baseurl = baseurl
         self.curpath = curpath
+        self.ignoredextension = ignoredextension
         self.output = output
         try:
             os.mkdir(output)
@@ -134,17 +136,17 @@ class Directory():
         htmlContentFile = ""
 
         # add link to go to previous dir
-        back_directory = File({"type": "directory", "name": ".."}, self.baseurl, self.curpath, self.output)
+        back_directory = File({"type": "directory", "name": ".."}, self.baseurl, self.curpath, self.ignoredextension, self.output)
         htmlContentDir += back_directory.genHTMLEntry()
 
         # check if directory actually has anything to add
         if "contents" in self.directory:
             # loop through files and dirs
             for i in self.directory["contents"]:
-                file = File(i, self.baseurl, self.curpath, self.output)
+                file = File(i, self.baseurl, self.curpath, self.ignoredextension, self.output)
                 if file.isDirectory():
                     # spawn new class and write those first
-                    subdirectory = Directory(i, f"{self.baseurl}/{i['name']}", f"{self.curpath}/{i['name']}", f"{self.output}/{i['name']}")
+                    subdirectory = Directory(i, f"{self.baseurl}/{i['name']}", f"{self.curpath}/{i['name']}", self.ignoredextension, f"{self.output}/{i['name']}")
                     subdirectory.write()
                     htmlContentDir += file.genHTMLEntry()
                 else:
@@ -180,7 +182,13 @@ if __name__ == "__main__":
                         type=str,
                         nargs=1,
                         help="Optional: basepath, use if you intend to publish apindex-generated html files in a subdirectory"
-    )
+                        )
+    parser.add_argument("--ignoredextension",
+                        metavar=".",
+                        type=str,
+                        nargs=1,
+                        help="Optional: ignoreextension, command delimited; use if you want to ship certain files directly from the host site. Useful for images or text files"
+                        )
     parser.add_argument("-o",
                         "--out",
                         metavar="site",
@@ -199,6 +207,10 @@ if __name__ == "__main__":
     if args.basepath:
         curpath = f"/{args.basepath[0]}"
 
+    ignoredextension = []
+    if args.ignoredextension:
+        ignoredextension = args.ignoredextension[0].rsplit(',')
+
     output = "site"
     if args.out:
         output = args.out[0]
@@ -206,5 +218,5 @@ if __name__ == "__main__":
     with open(args.tree[0], 'r') as f:
         dirtree = json.load(f)
 
-    rootdir = Directory(dirtree[0], baseurl, curpath, output)
+    rootdir = Directory(dirtree[0], baseurl, curpath, ignoredextension, output)
     rootdir.write()
