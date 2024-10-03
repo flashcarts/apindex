@@ -30,7 +30,7 @@ The file icons are also embedded into the `index.html` file so there is no need 
 ```
 git clone https://github.com/flashcarts/apindex
 cd apindex
-cmake . -DCMAKE_INSTALL_PREFIX=/usr
+cmake . -DCMAKE_INSTALL_PREFIX=/usr/local
 sudo make install
 ```
 
