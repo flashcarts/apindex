@@ -12,6 +12,7 @@
 import argparse
 import base64
 import json
+import markdown2
 import os
 from xml.dom.minidom import parseString
 
@@ -58,6 +59,9 @@ class File():
 
     def isDirectory(self):
         return self.file["type"] == "directory"
+
+    def isReadme(self):
+        return self.file["name"].lower().startswith("readme")
 
     def getIcon(self):
         if self.getFileName() == "..":
@@ -134,6 +138,7 @@ class Directory():
         htmlContent = htmlContent.replace("#TITLE", self.curpath)
         htmlContentDir = ""
         htmlContentFile = ""
+        directoryReadme = ""
 
         # add link to go to previous dir
         back_directory = File({"type": "directory", "name": ".."}, self.baseurl, self.curpath, self.ignoredextension, self.output)
@@ -151,9 +156,16 @@ class Directory():
                     htmlContentDir += file.genHTMLEntry()
                 else:
                     htmlContentFile += file.genHTMLEntry()
+                if file.isReadme():
+                    try:
+                        with open(f"{self.curpath}/{i['name']}","r") as reader:
+                            directoryReadme = f'<div id="readme"><u>{i["name"]}</u>\n{markdown2.markdown(reader.read())}</div><hr>'
+                    except:
+                        pass
 
         htmlContent = htmlContent.replace("#GEN_DIRS", htmlContentDir)
         htmlContent = htmlContent.replace("#GEN_FILES", htmlContentFile)
+        htmlContent = htmlContent.replace("#README",directoryReadme)
 
         with open(self.html_foot, "r") as f:
             htmlContent = htmlContent.replace("#FOOTER", f.read()).replace("#VERSION", VERSION)
