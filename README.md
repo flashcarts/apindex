@@ -17,6 +17,7 @@ The file icons are also embedded into the `index.html` file so there is no need 
 
 0. Install apindex
     - Check Quick install or "How do I install it?" section on how to do so
+    - You should also ensure that [python-markdown2](https://github.com/trentm/python-markdown2) is installed, as it is a dependency of apindex
 1. Run `tree -Js > tree.json` from the root of your files
 1. Run `apindex <path to tree.json>`
     - Optional: if your files are meant to be hosted on a different base URL than the generated HTML files, you can specify `-b <base URL>`
