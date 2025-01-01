@@ -159,7 +159,7 @@ class Directory():
                 if file.isReadme():
                     try:
                         with open(f"{self.curpath}/{i['name']}","r") as reader:
-                            directoryReadme = f'<div id="readme"><u>{i["name"]}</u>\n{markdown2.markdown(reader.read())}</div><hr>'
+                            directoryReadme += f'<div id="readme"><u>{i["name"]}</u>\n{markdown2.markdown(reader.read())}</div><hr>'
                     except:
                         pass
 
