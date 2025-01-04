@@ -158,8 +158,12 @@ class Directory():
                     htmlContentFile += file.genHTMLEntry()
                 if file.isReadme():
                     try:
+                        readmeExt = i['name'].split(".")
                         with open(f"{self.curpath}/{i['name']}","r") as reader:
-                            directoryReadme += f'<div id="readme"><u>{i["name"]}</u>\n{markdown2.markdown(reader.read())}</div><hr>'
+                            if(readmeExt[-1] == "md"):
+                                directoryReadme += f'<div id="readme"><u>{i["name"]}</u>\n{markdown2.markdown(reader.read())}</div><hr>'
+                            elif(readmeExt[-1] == "txt"):
+                                directoryReadme += f'<div id="readme"><u>{i["name"]}</u>\n<p>{reader.read().replace("\n","<br/>")}</p></div><hr>'
                     except:
                         pass
 
