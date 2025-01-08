@@ -161,9 +161,10 @@ class Directory():
                         readmeExt = i['name'].split(".")
                         with open(f"{self.curpath}/{i['name']}","r") as reader:
                             if(readmeExt[-1] == "md"):
-                                directoryReadme += f'<div id="readme"><u>{i["name"]}</u>\n{markdown2.markdown(reader.read())}</div><hr>'
+                                directoryReadme += f'<div id="readme"><u>{i["name"]}</u>{markdown2.markdown(reader.read())}</div><hr>'
                             elif(readmeExt[-1] == "txt"):
-                                directoryReadme += f'<div id="readme"><u>{i["name"]}</u>\n<p>{reader.read().replace("\n","<br/>")}</p></div><hr>'
+                                txtInsert = reader.read().replace("\n","<br/>")
+                                directoryReadme += f'<div id="readme"><u>{i["name"]}</u><p>{txtInsert}</p></div><hr>'
                     except:
                         pass
 
