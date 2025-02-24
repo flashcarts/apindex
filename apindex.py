@@ -20,6 +20,18 @@ from xml.dom.minidom import parseString
 VERSION = "@CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@"
 PREFIX = "@CMAKE_INSTALL_PREFIX@"
 
+def traverseDirectory(path):
+    # this will not make valid json, but it will work for our purposes
+    directoryTree = {}
+    if os.path.isdir(path):
+        directoryTree["name"] = os.path.basename(path)
+        directoryTree["type"] = "directory"
+        directoryTree["contents"] = [traverseDirectory(os.path.join(path,item)) for item in os.listdir(path)]
+    else:
+        directoryTree["name"] = os.path.basename(path)
+        directoryTree["type"] = "file"
+        directoryTree["size"] = os.path.getsize(path)
+    return directoryTree
 
 def parseIconsDescription():
     with open(f"{PREFIX}/share/apindex/icons.xml", "r") as f:
@@ -179,10 +191,10 @@ class Directory():
 
 
 if __name__ == "__main__":
-    description = "apindex - Script that, given `tree -Js`, creates a static HTML directory listing"
+    description = "apindex - Script that creates a static HTML directory listing"
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("tree",
-                        metavar="<output of `tree -Js`>",
+    parser.add_argument("directory",
+                        metavar="<file directory>",
                         type=str,
                         nargs=1,
                         help="root directory of files"
@@ -232,8 +244,7 @@ if __name__ == "__main__":
     if args.out:
         output = args.out[0]
 
-    with open(args.tree[0], 'r') as f:
-        dirtree = json.load(f)
+    dirtree = traverseDirectory(args.directory[0])
 
-    rootdir = Directory(dirtree[0], baseurl, curpath, ignoredextension, output)
+    rootdir = Directory(dirtree, baseurl, curpath, ignoredextension, output)
     rootdir.write()
