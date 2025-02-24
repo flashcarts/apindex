@@ -124,8 +124,9 @@ class File():
 
 
 class Directory():
-    def __init__(self, directory, baseurl, curpath, ignoredextension, output):
+    def __init__(self, directory, filedir, baseurl, curpath, ignoredextension, output):
         self.directory = directory
+        self.filedir = filedir
         self.baseurl = baseurl
         self.curpath = curpath
         self.ignoredextension = ignoredextension
@@ -163,7 +164,7 @@ class Directory():
                 file = File(i, self.baseurl, self.curpath, self.ignoredextension, self.output)
                 if file.isDirectory():
                     # spawn new class and write those first
-                    subdirectory = Directory(i, f"{self.baseurl}/{i['name']}", f"{self.curpath}/{i['name']}", self.ignoredextension, f"{self.output}/{i['name']}")
+                    subdirectory = Directory(i, self.filedir, f"{self.baseurl}/{i['name']}", f"{self.curpath}/{i['name']}", self.ignoredextension, f"{self.output}/{i['name']}")
                     subdirectory.write()
                     htmlContentDir += file.genHTMLEntry()
                 else:
@@ -171,7 +172,7 @@ class Directory():
                 if file.isReadme():
                     try:
                         readmeExt = i['name'].split(".")
-                        with open(f"{self.curpath}/{i['name']}","r") as reader:
+                        with open(f"{self.filedir}/{self.curpath}/{i['name']}","r") as reader:
                             if(readmeExt[-1] == "md"):
                                 directoryReadme += f'<div id="readme"><u>{i["name"]}</u>{markdown2.markdown(reader.read())}</div><hr>'
                             elif(readmeExt[-1] == "txt"):
@@ -179,6 +180,7 @@ class Directory():
                                 directoryReadme += f'<div id="readme"><u>{i["name"]}</u><p>{txtInsert}</p></div><hr>'
                     except:
                         pass
+
 
         htmlContent = htmlContent.replace("#GEN_DIRS", htmlContentDir)
         htmlContent = htmlContent.replace("#GEN_FILES", htmlContentFile)
@@ -244,7 +246,8 @@ if __name__ == "__main__":
     if args.out:
         output = args.out[0]
 
-    dirtree = traverseDirectory(args.directory[0])
+    filedir = args.directory[0]
+    dirtree = traverseDirectory(filedir)
 
-    rootdir = Directory(dirtree, baseurl, curpath, ignoredextension, output)
+    rootdir = Directory(dirtree, filedir, baseurl, curpath, ignoredextension, output)
     rootdir.write()
