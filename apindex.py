@@ -93,7 +93,7 @@ class File():
         return self.file["name"]
 
     def getPath(self):
-        if self.isDirectory() or [True if self.getFileName().endswith(ext) else False for ext in self.ignoredextension]:
+        if self.baseurl.startswith(".") or self.isDirectory() or [True if self.getFileName().endswith(ext) else False for ext in self.ignoredextension].count(True):
             return f"{self.curpath}/{self.getFileName()}"
         else:
             return f"{self.baseurl}/{self.getFileName()}"
