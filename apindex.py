@@ -218,7 +218,7 @@ if __name__ == "__main__":
                         metavar=".",
                         type=str,
                         nargs=1,
-                        help="Optional: ignoreextension, command delimited; use if you want to ship certain files directly from the host site. Useful for images or text files"
+                        help="Optional: ignoredextension, comma delimited; use if you want to ship certain files directly from the host site. Useful for images or text files"
                         )
     parser.add_argument("-o",
                         "--out",
