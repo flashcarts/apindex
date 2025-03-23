@@ -26,7 +26,7 @@ def traverseDirectory(path):
     if os.path.isdir(path):
         directoryTree["name"] = os.path.basename(path)
         directoryTree["type"] = "directory"
-        directoryTree["contents"] = [traverseDirectory(os.path.join(path,item)) for item in os.listdir(path)]
+        directoryTree["contents"] = [traverseDirectory(os.path.join(path,item)) for item in sorted(os.listdir(path))]
     else:
         directoryTree["name"] = os.path.basename(path)
         directoryTree["type"] = "file"
