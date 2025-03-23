@@ -1,4 +1,4 @@
-# apindex - Script that, given `tree -Js`, creates a static HTML directory listing
+# apindex - static file index generator/load reducer
 
 ### Quick install
 ```sh
@@ -7,7 +7,7 @@ curl https://raw.githubusercontent.com/flashcarts/apindex/master/install.sh | ba
 
 ### What is this?
 
-This is a program that generates `index.html` files in each directory on your server using the output of `tree -Js`. This is useful for static web servers that need support for file listing. One example of this is GitHub Pages.
+This is a program that generates `index.html` files in each directory on your server. This is useful for static web servers that need support for file listing. One example of this is GitHub Pages.
 
 It can also be used to reduce the server load for servers that serve static content, as the server does not need to generate the index each time it is accessed. Basically permanent cache.
 
@@ -18,8 +18,7 @@ The file icons are also embedded into the `index.html` file so there is no need 
 0. Install apindex
     - Check Quick install or "How do I install it?" section on how to do so
     - You should also ensure that [python-markdown2](https://github.com/trentm/python-markdown2) is installed, as it is a dependency of apindex
-1. Run `tree -Js > tree.json` from the root of your files
-1. Run `apindex <path to tree.json>`
+1. Run `apindex <path of file structure>`
     - Optional: if your files are meant to be hosted on a different base URL than the generated HTML files, you can specify `-b <base URL>`
         - This does not assume you add a trailing slash. While it won't break the site, it won't look pretty
 1. The HTML files will be written to `$PWD/site` directory
