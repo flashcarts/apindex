@@ -58,10 +58,11 @@ class Icon:
 
 
 class File():
-    def __init__(self, file, baseurl, curpath, ignoredextension, output):
+    def __init__(self, file, baseurl, basepath, curpath, ignoredextension, output):
         self.file = file
         self.baseurl = baseurl
         self.curpath = curpath.replace("./", "/")
+        self.basepath = basepath.replace("./", "/")
         self.ignoredextension = ignoredextension
         self.output = output
 
@@ -94,7 +95,7 @@ class File():
 
     def getPath(self):
         if self.baseurl.startswith(".") or self.isDirectory() or [True if self.getFileName().endswith(ext) else False for ext in self.ignoredextension].count(True):
-            return f"{self.curpath}/{self.getFileName()}"
+            return f"{self.basepath}/{self.getFileName()}"
         else:
             return f"{self.baseurl}/{self.getFileName()}"
 
@@ -124,9 +125,10 @@ class File():
 
 
 class Directory():
-    def __init__(self, directory, filedir, baseurl, curpath, ignoredextension, output):
+    def __init__(self, directory, filedir, baseurl, basepath, curpath, ignoredextension, output):
         self.directory = directory
         self.filedir = filedir
+        self.basepath = basepath
         self.baseurl = baseurl
         self.curpath = curpath
         self.ignoredextension = ignoredextension
@@ -147,24 +149,24 @@ class Directory():
             htmlContent = f.read()
 
         # initial setup
-        htmlContent = htmlContent.replace("#DIR", self.curpath)
-        htmlContent = htmlContent.replace("#TITLE", self.curpath)
+        htmlContent = htmlContent.replace("#DIR", self.basepath)
+        htmlContent = htmlContent.replace("#TITLE", self.basepath)
         htmlContentDir = ""
         htmlContentFile = ""
         directoryReadme = ""
 
         # add link to go to previous dir
-        back_directory = File({"type": "directory", "name": ".."}, self.baseurl, self.curpath, self.ignoredextension, self.output)
+        back_directory = File({"type": "directory", "name": ".."}, self.baseurl, self.basepath, self.curpath, self.ignoredextension, self.output)
         htmlContentDir += back_directory.genHTMLEntry()
 
         # check if directory actually has anything to add
         if "contents" in self.directory:
             # loop through files and dirs
             for i in self.directory["contents"]:
-                file = File(i, self.baseurl, self.curpath, self.ignoredextension, self.output)
+                file = File(i, self.baseurl, self.basepath, self.curpath, self.ignoredextension, self.output)
                 if file.isDirectory():
                     # spawn new class and write those first
-                    subdirectory = Directory(i, self.filedir, f"{self.baseurl}/{i['name']}", f"{self.curpath}/{i['name']}", self.ignoredextension, f"{self.output}/{i['name']}")
+                    subdirectory = Directory(i, self.filedir, f"{self.baseurl}/{i['name']}", f"{self.basepath}/{i['name']}", f"{self.curpath}/{i['name']}", self.ignoredextension, f"{self.output}/{i['name']}")
                     subdirectory.write()
                     htmlContentDir += file.genHTMLEntry()
                 else:
@@ -234,9 +236,9 @@ if __name__ == "__main__":
     if args.baseurl:
         baseurl = args.baseurl[0]
 
-    curpath = "."
+    basepath = "."
     if args.basepath:
-        curpath = f"/{args.basepath[0]}"
+        baseurl = args.basepath[0]
 
     ignoredextension = []
     if args.ignoredextension:
@@ -249,5 +251,5 @@ if __name__ == "__main__":
     filedir = args.directory[0]
     dirtree = traverseDirectory(filedir)
 
-    rootdir = Directory(dirtree, filedir, baseurl, curpath, ignoredextension, output)
+    rootdir = Directory(dirtree, filedir, baseurl, basepath, ".", ignoredextension, output)
     rootdir.write()
