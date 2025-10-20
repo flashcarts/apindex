@@ -235,6 +235,8 @@ if __name__ == "__main__":
     baseurl = "."
     if args.baseurl:
         baseurl = args.baseurl[0]
+        if baseurl[-1] == "/":
+            baseurl = baseurl[:-1]
 
     basepath = "."
     if args.basepath:
