@@ -240,7 +240,7 @@ if __name__ == "__main__":
 
     basepath = "."
     if args.basepath:
-        baseurl = args.basepath[0]
+        basepath = args.basepath[0]
 
     ignoredextension = []
     if args.ignoredextension:
